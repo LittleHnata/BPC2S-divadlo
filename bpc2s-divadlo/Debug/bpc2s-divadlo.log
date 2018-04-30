@@ -1,0 +1,3 @@
+﻿  bpc2s-divadlo.cpp
+c:\users\03ach\source\repos\bpc2s-divadlo\bpc2s-divadlo\bpc2s-divadlo.cpp(49): warning C4477: scanf_s: Formátovací řetězec %d vyžaduje argument typu int *, ale variadický argument 1 má typ int.
+  bpc2s-divadlo.vcxproj -> C:\Users\03ach\source\repos\bpc2s-divadlo\Debug\bpc2s-divadlo.exe
