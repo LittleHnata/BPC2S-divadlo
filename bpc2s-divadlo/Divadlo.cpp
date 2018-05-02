@@ -105,29 +105,8 @@ void nactimapu() {
 		printf("Nepodarilo se otevrit soubor.\n");	
 		tiskoddelovace();
 		return;
-	}
-	//bool prvni = true;
-	//while (fgets(buffer, 256, soubor)/*!feof(soubor)*/) {
-	//	/*fscanf_s(soubor, "%s", buffer);*/
-	//	a = strtok_s(buffer, ",", &next);
-	//	while (a!=NULL) {
-	//		a = strtok_s(NULL, ",", &next);
-	//		if (prvni)
-	//		i++;
-	//	}
-	//	prvni = false;
-	//	j++;
-	//}
-	////int** map =new int[i][j];
-	//map = new int*[i];
-	//for (int index = 0; index < i; index++) {
-	//	map[i] = new int[j];
-	//}
-	//rewind(soubor);
-	//i = 0;
-	//j = 0;
-	while (fgets(buffer, 256, soubor)/*!feof(soubor)*/) {
-		/*fscanf_s(soubor, "%s", buffer);*/
+	
+	while (fgets(buffer, 256, soubor)) {
 		a = strtok_s(buffer, ",", &next);
 		while (a != NULL) {
 			map[i][j] = atoi(a);
@@ -191,8 +170,9 @@ void ulozseznam(uzivatel *zaznam) { //uklada zaznamy do souboru
 	tiskoddelovace();
 }
 void tiskmapy() {
-	for (int i = 0; i < 14; i++) {
-		for (int j = 0; j < 7; j++) {
+	printf("------------------------------------\n          jeviste\n");
+	for (int j = 0; j < 7; j++) {
+		for (int i = 0; i < 14; i++) {
 			if(map[i][j]==0) {
 				printf("V|");
 			}else{
