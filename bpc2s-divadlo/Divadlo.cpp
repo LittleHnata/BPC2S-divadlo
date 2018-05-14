@@ -1,25 +1,25 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "string"
 #include "stdlib.h"
 #include "iostream"
 #include "fstream"
 #include "windows.h"
 #include "Divadlo.h"
-int map[14][7];
-void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno,int rezervace[2][5]) //pridava do seznamu
+int map[7][14];
+void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno,int pocet_rezervaci,int rezervace[2][5]) //pridava do seznamu
 {
 	int p = 0;
 	uzivatel *u = new uzivatel;
 	u->ID = ID;
 	strcpy_s(u->jmeno, VELIKOST, jmeno);
 	strcpy_s(u->prijmeni, VELIKOST, prijmeni);
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 5; j++) {
+	u->pocet_rezervaci = pocet_rezervaci;
+	for (int j = 0; j < pocet_rezervaci; j++) {
+		for (int i = 0; i < 2; i++) {
 			u->rezervace[i][j] = rezervace[i][j];
 		}
 	}
 	u->next = NULL;
-
 	uzivatel *temp, *temp2;
 	temp = *zaznam;
 
@@ -27,7 +27,7 @@ void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno,int rezervace[
 		*zaznam = u;
 		return;
 	}
-	for (int j = 0; j < 5; j++) {
+	for (int j = 0; j < pocet_rezervaci; j++) {
 		if (map[temp->rezervace[0][j]][temp->rezervace[1][j]] > 0)
 		{
 			p++;
@@ -45,7 +45,7 @@ void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno,int rezervace[
 
 	while (temp2 != NULL)
 	{
-		for (int j = 0; j < 5; j++) {
+		for (int j = 0; j < pocet_rezervaci; j++) {
 			if (map[temp->rezervace[0][j]][temp->rezervace[1][j]] > 0)
 			{
 				p++;
@@ -101,22 +101,40 @@ void nactimapu() {
 	char buffer[256];
 	system("cls");
 	tiskoddelovace();
-	if (fopen_s(&soubor, filePath2, "r") != 0) {
-		printf("Nepodarilo se otevrit soubor.\n");	
+	if (fopen_s(&soubor, filePath2, "r+") != 0) {
+		printf("Nepodarilo se otevrit soubor.\n");
 		tiskoddelovace();
 		return;
-	
-	while (fgets(buffer, 256, soubor)) {
-		a = strtok_s(buffer, ",", &next);
+	}
+	while (fgets(buffer, 256, soubor)!=NULL) {
+		a = strtok_s(buffer, ";", &next);
 		while (a != NULL) {
 			map[i][j] = atoi(a);
-			a = strtok_s(NULL, ",", &next);
-			i++;
+			a = strtok_s(NULL, ";", &next);
+			j++;
 		}
-		j++;
+		i++;
+		j = 0;
 	}
 	fclose(soubor);
 	printf("Soubor uspesne nacten\n");
+	tiskoddelovace();
+}
+void ulozmapu() {
+	FILE *soubor;
+	if (fopen_s(&soubor, filePath2 ,"w") != 0) {
+		printf("Nepodarilo se otevrit soubor.\n");
+		tiskoddelovace();
+		return;
+	}
+	for (int i = 0; i < 7; i++) {
+		for (int j = 0; j < 14; j++) {
+			fprintf_s(soubor, "%d;", map[i][j]);
+		}
+		fprintf_s(soubor, "\n");
+	}
+	fclose(soubor);
+	printf("Mapa uspesne ulozena\n");
 	tiskoddelovace();
 }
 void nactiseznam(uzivatel **zaznam) { //nacita ze souboru
@@ -131,12 +149,26 @@ void nactiseznam(uzivatel **zaznam) { //nacita ze souboru
 	}
 
 	char prijmeni[VELIKOST], jmeno[VELIKOST];
-	int ID;
+	char buffer[256];
+	char *a, *next;
+	int ID,i=0,pocet=0,pocet_rezervaci;
 	int rezervace[2][5];
 	while (!feof(soubor))
 	{
-		fscanf_s(soubor, "%d;%[^\;];%[^\;];%d;%d;%d;%d;%d;%d;%d;%d;%d;%d;\n",&ID, prijmeni, VELIKOST, jmeno, VELIKOST,  &rezervace[0][0], &rezervace[0][1], &rezervace[0][2], &rezervace[0][3], &rezervace[0][4], &rezervace[1][0], &rezervace[1][1], &rezervace[1][2], &rezervace[1][3], &rezervace[1][4]);
-		pridej(zaznam, ID, prijmeni, jmeno, rezervace);
+		fscanf_s(soubor, "%d;%[^\;];%[^\;];%d;%[^\n]",&ID, prijmeni, VELIKOST, jmeno, VELIKOST, &pocet_rezervaci, &buffer, 256);
+			a = strtok_s(buffer, ";", &next);
+			while (a != NULL) {
+				if (i < 2) {
+					rezervace[i][pocet] = atoi(a);
+					a = strtok_s(NULL, ";", &next);
+				}
+				i++;
+				if (i == 2)	{
+					i = 0;
+					pocet++;
+				}
+			}
+		pridej(zaznam, ID, prijmeni, jmeno,pocet_rezervaci, rezervace);
 	}
 	fclose(soubor);
 	printf("Soubor uspesne nacten\n");
@@ -150,20 +182,18 @@ void ulozseznam(uzivatel *zaznam) { //uklada zaznamy do souboru
 		printf("Nepodarilo se otevrit soubor");
 		tiskoddelovace();
 		return;
-	};
-	char* buffer = NULL;
+	}
 	while (zaznam != NULL)
 	{
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 5; j++) {
-				buffer += zaznam->rezervace[i][j];
-				buffer += ';';
+		fprintf_s(soubor, "%d;%s;%s;%d;", zaznam->ID, zaznam->prijmeni, zaznam->jmeno, zaznam->pocet_rezervaci);
+		for (int j = 0; j < zaznam->pocet_rezervaci; j++) {
+			for (int i = 0; i < 2; i++) {
+				fprintf_s(soubor, "%d;", zaznam->rezervace[i][j]);
 			}
 		}
-		fprintf_s(soubor, "%d;%s;%s;%s\n",zaznam->ID, zaznam->prijmeni, zaznam->jmeno, buffer);
+		fprintf_s(soubor, "\n");
 		zaznam = zaznam->next;
-		buffer = NULL;
-	}
+	}\
 
 	fclose(soubor);
 	printf("Soubor uspesne ulozen\n");
@@ -171,8 +201,9 @@ void ulozseznam(uzivatel *zaznam) { //uklada zaznamy do souboru
 }
 void tiskmapy() {
 	printf("------------------------------------\n          jeviste\n");
-	for (int j = 0; j < 7; j++) {
-		for (int i = 0; i < 14; i++) {
+	for (int i = 0; i < 7; i++) {
+		printf("%d|", i+1);
+		for (int j = 0; j < 14; j++) {
 			if(map[i][j]==0) {
 				printf("V|");
 			}else{
@@ -185,13 +216,24 @@ void tiskmapy() {
 }
 void tisk(uzivatel *zaznam) {
 	tiskmapy();
+	while (zaznam != NULL) {
+		tiskradku(zaznam);
+		zaznam = zaznam->next;
+	}
+}
+void tiskradku(uzivatel *u){
+	printf("ID: %d Prijmeni: %-25s Jmeno: %-25s Pocet rezervaci: %d ",u->ID,u->prijmeni,u->jmeno,u->pocet_rezervaci);
+	for (int j = 0; j < u->pocet_rezervaci; j++) {
+		printf("Rada: %d Misto: %d",u->rezervace[0][j],u->rezervace[1][j]);
+	}
+	printf("\n");
 }
 void najdizaznam(uzivatel *u, char *najdi) { //hleda zaznamy
 
 	tiskoddelovace();
 	while (u != NULL) {
 		if (strstr(u->prijmeni, najdi) != NULL) {
-			//tiskRadku(u);
+			tiskradku(u);
 		}
 		u = u->next;
 	}
@@ -222,7 +264,7 @@ void tiskoddelovace() {
 	}
 	printf("\n");
 }
-//porovnani øetìzcù
+//porovnani Ã¸etÃ¬zcÃ¹
 char *namale(char *text) {
 	char *pom;
 	pom = new char[strlen(text)];

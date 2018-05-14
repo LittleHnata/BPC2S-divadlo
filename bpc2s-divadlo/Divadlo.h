@@ -6,6 +6,7 @@ struct uzivatel {
 	int ID;
 	char jmeno[VELIKOST];
 	char prijmeni[VELIKOST];
+	int pocet_rezervaci;
 	int rezervace[2][5];
 	uzivatel *next;
 };
@@ -28,13 +29,15 @@ enum menu
 };
 static const char filePath[] = "./data.txt";
 static const char filePath2[] = "./map.txt";
-extern int map[14][7];
+extern int map[7][14];
 void nactimapu();
+void ulozmapu();
 void nactiseznam(uzivatel **zaznam);
 void ulozseznam(uzivatel *zaznam);
-void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno, int rezervace[2][5]);
+void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno, int pocet_rezervaci,int rezervace[2][5]);
 void smaz(uzivatel **zaznam, int ID);
 void najdizaznam(uzivatel *u, char* prijmeni);
+void tiskradku(uzivatel *u);
 void tisk(uzivatel *zaznam);
 void tiskmapy();
 void tiskoddelovace();
