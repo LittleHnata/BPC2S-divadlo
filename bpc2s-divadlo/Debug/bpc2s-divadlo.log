@@ -1,6 +1,6 @@
 ﻿  stdafx.cpp
+  bpc2s-divadlo.cpp
   Divadlo.cpp
 c:\users\03ach\source\repos\bpc2s-divadlo\bpc2s-divadlo\divadlo.cpp(164): warning C4129: ;: Nerozpoznala se znaková řídící sekvence.
-  bpc2s-divadlo.cpp
   Generování kódu...
   bpc2s-divadlo.vcxproj -> C:\Users\03ach\source\repos\bpc2s-divadlo\Debug\bpc2s-divadlo.exe
