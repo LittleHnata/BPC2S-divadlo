@@ -10,10 +10,6 @@ struct uzivatel {
 	int rezervace[2][5];
 	uzivatel *next;
 };
-enum rezervacenum {
-	v = 0, //volno
-	o		//obsazeno
-};
 
 enum menu
 {
@@ -24,12 +20,13 @@ enum menu
 	uloz,
 	nacti,
 	edituj,
-	vypocti,
 	konec
 };
 static const char filePath[] = "./data.txt";
 static const char filePath2[] = "./map.txt";
-extern int map[7][14];
+
+extern int map[7][14];  // mapa 
+
 void nactimapu();
 void ulozmapu();
 void nactiseznam(uzivatel **zaznam);
@@ -37,6 +34,7 @@ void ulozseznam(uzivatel *zaznam);
 void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno, int pocet_rezervaci,int rezervace[2][5]);
 void smaz(uzivatel **zaznam, int ID);
 void najdizaznam(uzivatel *u, char* prijmeni);
+void editujzaznam(uzivatel **zaznam,uzivatel *stare,  char* prijmeni, char* jmeno, int pocet_rezervaci, int rezervace[2][5]);
 void tiskradku(uzivatel *u);
 void tisk(uzivatel *zaznam);
 void tiskmapy();
@@ -44,8 +42,6 @@ void tiskoddelovace();
 uzivatel* vratzaznam(uzivatel *zaznam, char* najdi);
 char *namale(char *text);
 int porovnani(char *str1, char *str2);
-
-
 
 #endif
 

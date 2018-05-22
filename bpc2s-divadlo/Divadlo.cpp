@@ -5,7 +5,7 @@
 #include "fstream"
 #include "windows.h"
 #include "Divadlo.h"
-int map[7][14];
+int map[7][14]; // mapa
 void pridej(uzivatel **zaznam,int ID, char* prijmeni, char* jmeno,int pocet_rezervaci,int rezervace[2][5]) //pridava do seznamu
 {
 	int p = 0;
@@ -68,7 +68,7 @@ void smaz(uzivatel **zaznam, int ID) { //maze urcite veci ze seznamu
 	uzivatel *temp, *temp2;
 	temp = *zaznam;
 
-	if (temp) {
+	if (temp==NULL) {
 		tiskoddelovace();
 		printf("Prazdny seznam\n");
 		tiskoddelovace();
@@ -76,6 +76,9 @@ void smaz(uzivatel **zaznam, int ID) { //maze urcite veci ze seznamu
 	if (temp->ID == ID)
 	{
 		*zaznam = temp->next;
+		for (int i = 0; i < temp->pocet_rezervaci; i++) {
+			map[temp->rezervace[0][i]][temp->rezervace[1][i]] = 0;
+		}
 		delete temp;
 		return;
 	}
@@ -83,8 +86,11 @@ void smaz(uzivatel **zaznam, int ID) { //maze urcite veci ze seznamu
 	temp2 = temp->next;
 	while (temp2 != NULL)
 	{
-		if (temp2->ID== ID) {
+		if (temp2->ID == ID) {
 			temp->next = temp2->next;
+			for (int i = 0; i < temp2->pocet_rezervaci; i++) {
+				map[temp2->rezervace[0][i]][temp2->rezervace[1][i]] = 0;
+			}
 			delete temp2;
 			return;
 		}
@@ -122,7 +128,7 @@ void nactimapu() {
 }
 void ulozmapu() {
 	FILE *soubor;
-	if (fopen_s(&soubor, filePath2 ,"w") != 0) {
+	if (fopen_s(&soubor, filePath2 ,"w+") != 0) {
 		printf("Nepodarilo se otevrit soubor.\n");
 		tiskoddelovace();
 		return;
@@ -220,6 +226,7 @@ void tisk(uzivatel *zaznam) {
 		tiskradku(zaznam);
 		zaznam = zaznam->next;
 	}
+	tiskoddelovace();
 }
 void tiskradku(uzivatel *u){
 	printf("ID: %d Prijmeni: %-25s Jmeno: %-25s Pocet rezervaci: %d ",u->ID,u->prijmeni,u->jmeno,u->pocet_rezervaci);
@@ -239,6 +246,10 @@ void najdizaznam(uzivatel *u, char *najdi) { //hleda zaznamy
 	}
 	tiskoddelovace();
 
+}
+void editujzaznam(uzivatel **zaznam, uzivatel *stare, char* prijmeni, char* jmeno, int pocet_rezervaci, int rezervace[2][5]) {
+	smaz(zaznam, stare->ID);
+	pridej(zaznam, stare->ID, prijmeni, jmeno, pocet_rezervaci, rezervace);
 }
 uzivatel *vratzaznam(uzivatel *zaznam, char *prijmeni) {
 	while (zaznam != NULL)
@@ -267,11 +278,13 @@ void tiskoddelovace() {
 //porovnani øetìzcù
 char *namale(char *text) {
 	char *pom;
+	int i = 0;
 	pom = new char[strlen(text)];
-	for (int i = 0; text[i]; i++)
+	for (i; text[i]; i++)
 	{
 		pom[i] = tolower(text[i]);
 	}
+	pom[++i] = '\0';
 	return pom;
 }
 
