@@ -39,7 +39,7 @@ void tiskradku(uzivatel *u);
 void tisk(uzivatel *zaznam);
 void tiskmapy();
 void tiskoddelovace();
-uzivatel* vratzaznam(uzivatel *zaznam, char* najdi);
+uzivatel* vratzaznam(uzivatel *zaznam,int ID);
 char *namale(char *text);
 int porovnani(char *str1, char *str2);
 

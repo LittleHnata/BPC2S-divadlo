@@ -251,10 +251,10 @@ void editujzaznam(uzivatel **zaznam, uzivatel *stare, char* prijmeni, char* jmen
 	smaz(zaznam, stare->ID);
 	pridej(zaznam, stare->ID, prijmeni, jmeno, pocet_rezervaci, rezervace);
 }
-uzivatel *vratzaznam(uzivatel *zaznam, char *prijmeni) {
+uzivatel *vratzaznam(uzivatel *zaznam, int ID) {
 	while (zaznam != NULL)
 	{
-		if (porovnani(zaznam->prijmeni, prijmeni) == 0) {
+		if (zaznam->ID==ID) {
 			return zaznam;
 		}
 		zaznam = zaznam->next;
